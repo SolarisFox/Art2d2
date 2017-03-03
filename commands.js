@@ -20,7 +20,18 @@ exports.commands = {
 	 * These commands are here to provide information about the bot.
 	 */
 
+	about: function(arg, by, room) {
+		room.say("A bot made by SolarisFox. Objectively the cutest bot on Showdown.");
+	},
 
+	help: function(arg, by, room) {
+		if (!config.botguide) return false;
+		room.say("List of bot commands can be found here: " + config.botguide);
+	},
+
+	git: function(arg, by, room) {
+		room.say("My git repository can be found here: https://github.com/SolarisFox/Art2d2");
+	},
 
 	/**
 	 * Dev commands
