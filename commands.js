@@ -399,11 +399,11 @@ exports.commands = {
 	dd: 'dailydraw',
 	dailydraw: function(arg, by, room) {
 		var text = ""
-		if (!dailydraws.dd) dailydraws.dd = 'There is no Daily Draw currently set.';
+		if (!Data.dailydraws.dd) Data.dailydraws.dd = 'There is no Daily Draw currently set.';
 		if (!arg) {
-			if (room.pm || !by.hasRank('+', room)) return by.say(dailydraws.dd);
-			if (room.canHTML()) return room.say(Tools.speechBubble(dailydraws.dd));
-			return room.say(dailydraws.dd);
+			if (room.pm || !by.hasRank('+', room)) return by.say(Data.dailydraws.dd);
+			if (room.canHTML()) return room.say(Tools.speechBubble(Data.dailydraws.dd));
+			return room.say(Data.dailydraws.dd);
 		} else if (toId(arg) === 'ideas') {
 			if (!room.pm && !by.hasRank('+', room)) text = '/pm ' + by.id + ', ';
 			return room.say(text + 'https://docs.google.com/forms/d/19clD3D7rw9COaY6PvgD0UgJ7v933dzBiK5VVNYyjOQE/viewform?usp=send_form');
@@ -416,30 +416,30 @@ exports.commands = {
 		} else if (arg.substr(0, 5).toLowerCase()  === 'set, ') {
 			if (!by.hasRank('%', getRoom("art"))) return room.say('Requires %.');
 			if (room.pm) return by.say('\\dd set cannot be used in pm.');
-			dailydraws.dd = arg.charAt(5).toUpperCase() + arg.substr(6);
-			dailydraws.ddlog = {"user":Tools.trimRank(by.name),"time":Date.now()};
-			if (!dailydraws.archive) dailydraws.archive = [];
-			dailydraws.archive.push(Tools.getDate() + ": " + dailydraws.dd);
-			Tools.writeJSON('dailydraws', dailydraws);
+			Data.dailydraws.dd = arg.charAt(5).toUpperCase() + arg.substr(6);
+			Data.dailydraws.ddlog = {"user":Tools.trimRank(by.name),"time":Date.now()};
+			if (!Data.dailydraws.archive) Data.dailydraws.archive = [];
+			Data.dailydraws.archive.push(Tools.getDate() + ": " + Data.dailydraws.dd);
+			Tools.writeJSON('dailydraws', Data.dailydraws);
 			return room.say('The Daily Draw has been set!');
 		} else if (arg.substr(0, 7).toLowerCase()  === 'amend, ') {
 			if (!by.hasRank('%', getRoom("art"))) return room.say('Requires %.');
 			if (room.pm) return by.say('\\dd set cannot be used in pm.');
-			if (!dailydraws.dd) return room.say('There is no Daily Draw currently set!');
-			dailydraws.dd = arg.charAt(7).toUpperCase() + arg.substr(8);
-			dailydraws.archive[dailydraws.archive.length - 1] = Tools.getDate() + ": " + dailydraws.dd;
-			Tools.writeJSON('dailydraws', dailydraws);
+			if (!Data.dailydraws.dd) return room.say('There is no Daily Draw currently set!');
+			Data.dailydraws.dd = arg.charAt(7).toUpperCase() + arg.substr(8);
+			Data.dailydraws.archive[Data.dailydraws.archive.length - 1] = Tools.getDate() + ": " + Data.dailydraws.dd;
+			Tools.writeJSON('dailydraws', Data.dailydraws);
 			return room.say('The Daily Draw has edited!');
 		} else if (toId(arg) === 'posts') {
 			if (!room.pm && !by.hasRank('+', room)) text = '/pm ' + by.id + ', ';
 			return room.say(text + 'http://www.smogon.com/forums/threads/daily-draw-challenge.3541628/');
 		} else if (toId(arg) === 'archive') {
 			if (!by.hasRank('+', getRoom("art")) && !by.paw) return room.say('Requires +.');
-			Tools.uploadToHastebin(by, dailydraws.archive.join("\n"));
+			Tools.uploadToHastebin(by, Data.dailydraws.archive.join("\n"));
 		} else if (toId(arg) === 'log') {
 			if (!room.pm && !by.hasRank('+', room)) text = '/pm ' + by.id + ', ';
-			var timeAgo = Tools.getTimeAgo(dailydraws.ddlog.time);
-			return room.say(text + 'Daily Draw was set ' + timeAgo + ' ago by ' + dailydraws.ddlog.user + '.');
+			var timeAgo = Tools.getTimeAgo(Data.dailydraws.ddlog.time);
+			return room.say(text + 'Daily Draw was set ' + timeAgo + ' ago by ' + Data.dailydraws.ddlog.user + '.');
 		} else {
 			room.say(text + 'Valid Daily Draw commands are: ``set``, ``amend``, ``info``, ``ideas``, ``archive``, and ``posts``.');
 		}
