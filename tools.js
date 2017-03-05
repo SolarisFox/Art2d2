@@ -104,7 +104,7 @@ exports.tools = {
 			var data = JSON.stringify(newData);
 			fs.writeFile('saves/' + fileName + '.json.0', data, function() {
 				// rename is atomic on POSIX, but will throw an ERROR on Windows
-				fs.rename('saves/' + fileName + '.json.0', fileName + '.json', function(err) {
+				fs.rename('saves/' + fileName + '.json.0', 'saves/' + fileName + '.json', function(err) {
 					if (err) {
 						// This should only happen on Windows.
 						fs.writeFile('saves/' + fileName + '.json', data, finishWriting);
