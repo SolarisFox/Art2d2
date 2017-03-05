@@ -63,7 +63,7 @@ exports.parser = {
 		if (curTime - Parser.roomintroTimer > 20 * HOURS) {
 			var nextIntro = {};
 			do {
-				nextIntro = sample(Data.roomintros)[0];
+				nextIntro = Tools.sample(Data.roomintros)[0];
 			} while (curTime - nextIntro.lastUsed < 5 * DAYS);
 			Parser.currentIntro = nextIntro.index;
 			Commands.roomintro.call(Parser, Parser.currentIntro, getUser(config.nick), getRoom('art'));
