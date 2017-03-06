@@ -24,22 +24,36 @@ if (process.argv[2]) {
 	};
 	var req = http.request(requestOptions, function(res) {
 		res.setEncoding('utf8');
+		var str = "";
 		res.on('data', function(chunk) {
+			str += chunk;
+		});
+		res.on('end', function() {
 			if (received) {
 				return;
 			}
 			received = true;
-			
+
 			var search = 'var config = ';
-			var index = chunk.indexOf(search);
+			var index = str.indexOf(search);
 			if (index !== -1) {
-				var data = chunk.substr(index);
+				var data = str.substr(index);
 				data = data.substr(search.length, data.indexOf(';') - search.length);
-				data = JSON.parse(data);
+				while (typeof data === "string") {
+					data = JSON.parse(data);
+				}
+
 				console.log('---------------');
-				console.log('host: ' + data.host);
-				console.log('port: ' + data.port);
-				console.log('serverid: ' + data.id);
+				if (data.host !== "showdown") {	
+					console.log('host: ' + data.host);
+					console.log('port: ' + data.port);
+					console.log('serverid: ' + data.id);
+				} else {
+					console.log('host: sim.smogon.com');
+					console.log('port: 8000');
+					console.log('serverid: showdown');
+				}
+				console.log('---------------\n');
 			} else {
 				console.log('ERROR: failed to get data!');
 			}
