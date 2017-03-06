@@ -537,7 +537,7 @@ exports.parser = {
 					foundMatch = "happy";
 					mood.happy += 3;
 					mood.lewd += Math.floor(mood.happy / 20);
-					mood.usedKeywords.push(keywords.lewd[i]);
+					mood.usedKeywords.push(keywords.semilewd[i]);
 					break;
 				}
 			}
@@ -584,7 +584,7 @@ exports.parser = {
 				do {
 					var num = happyPercent - 5 + random(10);
 					if (num < 0) num = 0;
-					if (num >= happyResponces.length) num = happyResponces.length;
+					if (num >= happyResponces.length) num = happyResponces.length - 1;
 					response = happyResponces[num];
 				} while (response === mood.lastResponce);
 				mood.lastResponce = response;
@@ -600,7 +600,7 @@ exports.parser = {
 				do {
 					var num = sadPercent - 5 + random(10);
 					if (num < 0) num = 0;
-					if (num >= sadResponces.length) num = sadResponces.length;
+					if (num >= sadResponces.length) num = sadResponces.length - 1;
 					response = sadResponces[num];
 				} while (response === mood.lastResponce);
 				mood.lastResponce = response;
@@ -624,7 +624,7 @@ exports.parser = {
 				do {
 					var num = lewdPercent - 3 + random(6);
 					if (num < 0) num = 0;
-					if (num >= lewdResponces.length) num = lewdResponces.length;
+					if (num >= lewdResponces.length) num = lewdResponces.length - 1;
 					response = lewdResponces[num];
 				} while (response === mood.lastResponce);
 				mood.lastResponce = response;
@@ -636,6 +636,7 @@ exports.parser = {
 				console.log(mood);
 				console.log(msg);
 				this.room.say("RP mood out of bounds exception. Report to bot owner.");
+				return;
 			} else if (response.charAt(0) === "X") {
 				response = response.substr(1);
 			} else if (response.charAt(0) === "/") {
