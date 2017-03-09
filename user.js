@@ -1,18 +1,20 @@
 ﻿global.Users = {};
 
-global.getUser = function(username) {
+global.getUser = function(username, recursive) {
 	if (Users[toId(username)]) {
 		var user = Users[toId(username)];
-		while (typeof user === "string") {
-			user = Users[user];
-		}
-		if (!user) {
-			username = "Error: Dummy Username";
-			DebugTools.error("No username parsed from message:");
+		if (typeof user === "string") {
+			if (recursive) {
+				DebugTools.error("Circular user alias: " + username);
+				console.log(Parser.lastMessage);
+				return new User(" Dummy Username");
+			}
+			return getUser(user, true);
+		} else if (typeof user === "undefined") {
+			DebugTools.error("Missing alt pointer for: " + username);
 			console.log(Parser.lastMessage);
-			return new User(username);
+			return new User(" Dummy Username");
 		}
-		user.newAlt(username);
 		return user;
 	}
 	var newUser = new User(username);
@@ -46,6 +48,15 @@ exports.user = function (name) {
 	this.alts = [];
 	this.gallery = Data.galleries[this.id] || "";
 	this.lastSeen = Date.now();
+
+	this.destroy = function() {
+		for (var i = 0; i < this.alts.length; i++) {
+			delete Data.rpdata[this.alts[i]];
+			delete Users[this.alts[i]];
+		}
+		delete Data.rpdata[this.id];
+		delete Users[this.id];
+	};
 
 	this.hasRank = function (rank, room) {
 		if (this.isSysOp() || this.isSelf()) return true;
@@ -90,18 +101,37 @@ exports.user = function (name) {
 		Tools.writeJSON('messages', Data.messages);
 	};
 	this.newAlt = function(newName) {
-		var newId = toId(newName);
-		if (this.id === newId) return;
-
-		if (this.alts.indexOf(this.id) === -1) this.alts.push(this.id);
-		if (!Users[newId]) Users[newId] = this.id;
+		if (this.name === newName) return;
+		this.currentId = toId(newName);
 		this.name = newName;
-		this.id = newId;
-		if (ranks.indexOf(this.rank) < ranks.indexOf(this.name.charAt(0))) checkGolbalAuth(this.name);
-		if (this.alts.indexOf(this.id) > -1) this.alts.splice(this.alts.indexOf(this.id), 1);
 
-		if (!this.paw) this.paw = (Data.settings.roompaw[this.id]) ? true : false;
-		if (!this.gallery) this.gallery = Data.galleries[this.id] || "";
+		if (this.currentId !== this.id && this.alts.indexOf(this.currentId) === -1) {
+			// the alt hasn't been seen before so combine them
+			this.alts.push(this.currentId);
+			if (Users[this.currentId]) {
+				if (typeof Users[this.currentId] === "object") { // merge the user objects 
+					var oldObj = Users[this.currentId];
+					for (var i = 0; i < oldObj.alts.length; i++) {
+						if (oldObj.alts[i] !== this.id && this.alts.indexOf(oldObj.alts[i]) === -1) this.alts.push(oldObj.alts[i]);
+						Users[oldObj.alts[i]] = this.id;
+					}
+					if (ranks.indexOf(this.rank) < ranks.indexOf(oldObj.rank)) this.rank = oldObj.rank;
+					if (!this.paw) this.paw = oldObj.paw;
+					if (!this.gallery) this.gallery = oldObj.gallery;
+					
+					Users[oldObj.id] = this.id;
+				} else { // string pointer to another user object
+					// yikes, getting here is possible but probably means users
+					// are sharing accounts, so lets ignore it.
+					DebugTools.info("user '" + this.id + "' attempting to merge with '" + Users[this.currentId] + "'");
+				}
+			} else { // username hasn't been seen before
+				Users[this.currentId] = this.id;
+				if (ranks.indexOf(this.rank) < ranks.indexOf(this.name.charAt(0))) checkGolbalAuth(this.name);
+				if (!this.paw) this.paw = (Data.settings.roompaw[this.currentId]) ? true : false;
+				if (!this.gallery) this.gallery = Data.galleries[this.currentId] || "";
+			}
+		}
 	};
 	this.isSelf = function() {
 		return this.id === toId(config.nick);

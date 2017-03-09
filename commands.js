@@ -405,10 +405,10 @@ exports.commands = {
 			if (room.canHTML()) return room.say(Tools.speechBubble(Data.dailydraws.dd));
 			return room.say(Data.dailydraws.dd);
 		} else if (toId(arg) === 'ideas') {
-			if (!room.pm && !by.hasRank('+', room)) text = '/pm ' + by.id + ', ';
+			if (!room.pm && !by.hasRank('+', room)) text = '/pm ' + by.currentId + ', ';
 			return room.say(text + 'https://docs.google.com/forms/d/19clD3D7rw9COaY6PvgD0UgJ7v933dzBiK5VVNYyjOQE/viewform?usp=send_form');
 		} else if (toId(arg) === 'list') {
-			if (!room.pm && !by.hasRank('+', room)) text = '/pm ' + by.id + ', ';
+			if (!room.pm && !by.hasRank('+', room)) text = '/pm ' + by.currentId + ', ';
 			return room.say(text + 'https://docs.google.com/spreadsheets/d/13_TuErG5sqs94VEbFCIha7oHXtjuxxG7GOcYBpWoV4o/edit#gid=376727512');
 		} else if (toId(arg) === 'info') {
 			return room.say(text + '**Daily Draw** is a room activity wherein you make a short sketch or speedpaint of the listed activity to practice your skills and creativity. ' + 
@@ -431,13 +431,13 @@ exports.commands = {
 			Tools.writeJSON('dailydraws', Data.dailydraws);
 			return room.say('The Daily Draw has edited!');
 		} else if (toId(arg) === 'posts') {
-			if (!room.pm && !by.hasRank('+', room)) text = '/pm ' + by.id + ', ';
+			if (!room.pm && !by.hasRank('+', room)) text = '/pm ' + by.currentId + ', ';
 			return room.say(text + 'http://www.smogon.com/forums/threads/daily-draw-challenge.3541628/');
 		} else if (toId(arg) === 'archive') {
 			if (!by.hasRank('+', getRoom("art")) && !by.paw) return room.say('Requires +.');
 			Tools.uploadToHastebin(by, Data.dailydraws.archive.join("\n"));
 		} else if (toId(arg) === 'log') {
-			if (!room.pm && !by.hasRank('+', room)) text = '/pm ' + by.id + ', ';
+			if (!room.pm && !by.hasRank('+', room)) text = '/pm ' + by.currentId + ', ';
 			var timeAgo = Tools.getTimeAgo(Data.dailydraws.ddlog.time);
 			return room.say(text + 'Daily Draw was set ' + timeAgo + ' ago by ' + Data.dailydraws.ddlog.user + '.');
 		} else {
@@ -474,9 +474,7 @@ exports.commands = {
 	mail: 'message',
 	msg: 'message',
 	message: function(arg, by, room) {
-		if (!Data.settings.roompaw[by.id]) {
-			if (!by.canUse('message', getRoom("art"))) return by.say('``\mail`` is only available to users ' + Data.settings.commands.message.art || config.defaultrank + ' and above and those with "roompaw".');
-		}
+		if (!by.paw && !by.canUse('message', getRoom("art"))) return by.say('``\mail`` is only available to users ' + Data.settings.commands.message.art || config.defaultrank + ' and above and those with "roompaw".');
 		var user = toId(arg.split(', ')[0]);
 		if (user.length > 18 || user.length === 0) return room.say('That\'s not a real username! >:I');
 		var message = by.name + ': ' + arg.substr(arg.split(', ')[0].length + 2);
@@ -496,19 +494,6 @@ exports.commands = {
 		Data.messages[user][msgNumber] = message;
 		Tools.writeJSON("messages", Data.messages);
 		by.say('Your message has been sent to ' + user + '.');
-	},
-
-	mailbox: 'readmessages',
-	checkmail: 'readmessages',
-	readmail: 'readmessages',
-	readmessages: function(arg, by, room) {
-		if (!Data.messages[by.id]) return by.say('Your inbox is empty.');
-		for (var msgNumber in Data.messages[by.id]) {
-			if (msgNumber === 'timestamp') continue;
-			by.say(Data.messages[by.id][msgNumber]);
-		}
-		delete Data.messages[by.id];
-		Tools.writeJSON("messages", Data.messages);
 	},
 
 	roompaw: function(arg, by, room) {

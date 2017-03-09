@@ -29,11 +29,7 @@ exports.parser = {
 		//clear out inactive users
 		for (var user in Users) {
 			if (curTime - Users[user].lastSeen > 5 * DAYS) {
-				var target = Users[user];
-				for (var i = 0; i < target.alts.length; i++) {
-					if (Users[target.alts[i]]) delete Users[target.alts[i]];
-				}
-				delete Users[user];
+				Users[user].destroy();
 			}
 		}
 
@@ -48,7 +44,7 @@ exports.parser = {
 			if (!Users[user]) {
 				delete Data.rpdata[user];
 			} else if (curTime - Data.rpdata[user].lastRP > 8 * HOURS) {
-				Data.rpdata[user].usedKeywords = [];
+				Data.rpdata[user].usedKeywords = []; //reset used keywords
 				if (Data.rpdata[user].lewd > 40) Data.rpdata[user].lewd = 40;
 			}
 		}
@@ -286,18 +282,18 @@ exports.parser = {
 				var by = getUser(spl[3]);
 				by.newAlt(spl[2]);
 				by.update();
-				this.room.users.push(by.id);
+				this.room.users.push(by.currentId);
 				this.room.users.splice(this.room.users.indexOf(toId(spl[3])), 1);
 				break;
 			case 'J': case 'j':
 				var by = getUser(spl[2]);
 				by.update();
-				this.room.users.push(by.id);
+				this.room.users.push(by.currentId);
 				break;
 			case 'l': case 'L':
 				var by = getUser(spl[2]);
 				by.update();
-				this.room.users.splice(this.room.users.indexOf(by.id), 1);
+				this.room.users.splice(this.room.users.indexOf(by.currentId), 1);
 				break;
 			case 'raw':
 				// get current roomintro number
