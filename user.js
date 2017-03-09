@@ -47,6 +47,15 @@ exports.user = function (name) {
 	this.gallery = Data.galleries[this.id] || "";
 	this.lastSeen = Date.now();
 
+	this.destroy = function() {
+		for (var i = 0; i < this.alts.length; i++) {
+			delete Data.rpdata[this.alts[i]];
+			delete Users[this.alts[i]];
+		}
+		delete Data.rpdata[this.id];
+		delete Users[this.id];
+	};
+
 	this.hasRank = function (rank, room) {
 		if (this.isSysOp() || this.isSelf()) return true;
 		var needed = ranks.indexOf(rank);
@@ -94,7 +103,21 @@ exports.user = function (name) {
 		if (this.id === newId) return;
 
 		if (this.alts.indexOf(this.id) === -1) this.alts.push(this.id);
-		if (!Users[newId]) Users[newId] = this.id;
+		if (Users[newId]) {
+			if (typeof Users[newId] === "object") { //merge the alts
+				var oldObj = Users[newId];
+				for (var i = 0; i < oldObj.alts.length; i++) {
+					if (oldObj.alts[i] !== newId && this.alts.indexOf(oldObj.alts[i]) === -1) this.alts.push(oldObj.alts[i]);
+				}
+				if (ranks.indexOf(this.rank) < ranks.indexOf(oldObj.rank)) this.rank = oldObj.rank;
+				if (!this.paw) this.paw = oldObj.paw;
+				if (!this.gallery) this.gallery = oldObj.gallery;
+				
+				Users[newId] = this.id;
+			}
+		} else {
+			Users[newId] = this.id;
+		}
 		this.name = newName;
 		this.id = newId;
 		if (ranks.indexOf(this.rank) < ranks.indexOf(this.name.charAt(0))) checkGolbalAuth(this.name);

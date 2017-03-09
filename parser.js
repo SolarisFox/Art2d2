@@ -29,11 +29,7 @@ exports.parser = {
 		//clear out inactive users
 		for (var user in Users) {
 			if (curTime - Users[user].lastSeen > 5 * DAYS) {
-				var target = Users[user];
-				for (var i = 0; i < target.alts.length; i++) {
-					if (Users[target.alts[i]]) delete Users[target.alts[i]];
-				}
-				delete Users[user];
+				Users[user].destroy();
 			}
 		}
 
@@ -48,7 +44,7 @@ exports.parser = {
 			if (!Users[user]) {
 				delete Data.rpdata[user];
 			} else if (curTime - Data.rpdata[user].lastRP > 8 * HOURS) {
-				Data.rpdata[user].usedKeywords = [];
+				Data.rpdata[user].usedKeywords = []; //reset used keywords
 				if (Data.rpdata[user].lewd > 40) Data.rpdata[user].lewd = 40;
 			}
 		}
