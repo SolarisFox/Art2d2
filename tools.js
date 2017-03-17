@@ -5,6 +5,7 @@ var url = require('url');
 var http = require('http');
 var https = require('https');
 var Color = require('./color.js').color;
+var Image = require('./image.js').image;
 
 // common functions are global to save on characters
 
@@ -117,6 +118,21 @@ exports.tools = {
 		innerCall();
 	},
 
+	readHTMLfromURL: function(link) {
+		return new Promise(function (fulfill, reject) {
+			request(link, function (err, response, body) {
+				if (!err && response.statusCode == 200) {
+					fulfill(body);
+				} else {
+					DebugTools.error("Failed to load from " + link);
+					console.log(response.statusCode);
+					console.log(err);
+					reject(err);
+				}
+			});
+		});
+	},
+
 	readJSONfromURL: function(link) {
 		return new Promise(function (fulfill, reject) {
 			request(link, function (err, response, body) {
@@ -124,12 +140,13 @@ exports.tools = {
 					try {
 						fulfill(JSON.parse(body));
 					} catch(e) {
-						DebugTools.error(e.stack);
-						console.log("\n" + body);
+						DebugTools.error(e);
+						console.log(body.substr(0, 35) + "...");
 						reject(e);
 					}
 				} else {
 					DebugTools.error("Failed to load from " + link);
+					console.log(response.statusCode);
 					console.log(err);
 					reject(err);
 				}
@@ -141,7 +158,7 @@ exports.tools = {
 		return new Promise(function (fulfill, reject) {	
 			var options = url.parse(link);
 			var linkType = link.substr(0, 5) === "https" ? https : http;
-			
+
 			linkType.get(options, function (response) {
 				var chunks = [];
 				response.on('data', function (chunk) {
@@ -153,19 +170,10 @@ exports.tools = {
 						imgData = sizeOf(buffer);
 					} catch(e) {
 						DebugTools.error("Failed to load image from " + link);
-						console.log(e.stack);
-						reject(e);
+						console.log(e);
+						return reject(e);
 					}
-					var img = {
-						link: link,
-						user: by ? by.name : "",
-						h: imgData.height,
-						w: imgData.width,
-						orientation: (imgData.height > imgData.width ? 'p' : 'l'),
-						res: 1,
-						timestamp: Date.now()
-					}
-					fulfill(img);
+					fulfill(new Image(link, imgData));
 				});
 			});
 		});

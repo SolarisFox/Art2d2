@@ -23,6 +23,7 @@ exports.parser = {
 	lastMessage: "",
 	lastReply: "",
 	pendingImages: {},
+	pendingImageNumber: Math.floor(Math.random() * 98000) + 1,
 	chatTimer: setInterval(function() {
 		var curTime = Date.now();
 
@@ -52,7 +53,7 @@ exports.parser = {
 
 		// clear out old image request
 		for (var request in Parser.pendingImages) {
-			if (curTime - Parser.pendingImages[request].timestamp > 30 * MINUTES) delete Parser.pendingImages[request];
+			if (curTime - Parser.pendingImages[request].timestamp > 10 * MINUTES) delete Parser.pendingImages[request];
 		}
 
 		// change out art roomintro
@@ -385,6 +386,7 @@ exports.parser = {
 				} else {
 					error("invalid command type for " + cmd + ": " + (typeof Commands[cmd]));
 				}
+				return true; //if a message is a command it doesn't need to be parsed further
 			}
 		}
 
@@ -396,6 +398,18 @@ exports.parser = {
 		}
 		if (/(some|any)(body|one|1).+(mak(e|ing)|draw(?:ing)?).+m(e|y)/i.test(message) && this.room.id === 'art') 
 			by.say('Looking to have something drawn? Try submitting a request here: https://docs.google.com/forms/d/1GS2xTBClmuqhnamCEWPBwGYWJJlx_0X00PR8BN5UR1Y/viewform');
+
+		//parse links
+		var urlFragments = message.split("http");
+		for (var i = 0; i < urlFragments.length; i++) {
+			var fragment = urlFragments[i];
+			if (fragment.charAt(0) !== 's' && fragment.charAt(0) !== ':') continue;
+			var linkType = fragment.charAt(0) === 's' ? 'https' : 'http';
+			if (linkType === 'https') fragment = fragment.substr(1); //push forward 1 character
+			if (fragment.substr(0, 3) !== "://") continue;
+			var linkEnd = fragment.indexOf(" ");
+			this.parseUrl(linkType + (linkEnd > -1 ? fragment.substr(0, linkEnd) : fragment), by);
+		}
 
 		// parse stuff for RP responses
 		if (this.room.canRP(by)) {
@@ -436,6 +450,58 @@ exports.parser = {
 		}
 		for (var i = 0; i < voices.length; i++) {
 			room.auth[toId(voices[i])] = "+";
+		}
+	},
+
+	parseUrl(link, by) {
+		var linkType = link.substr(0, link.indexOf("//") + 2);
+		var linkBody = link.substr(linkType.length);
+		var linkParts = linkBody.split('.');
+		if (this.room.id === "art") {
+			// try to display images
+			if (/(png|gif|jpe?g|bmp|psd)/i.test(linkParts[linkParts.length - 1])) {
+				Tools.getImageData(link, by).then(img => {
+					if (by.canUse('showimage', this.room)) {
+						this.room.say("/addhtmlbox " + img.maxSize(500, 300).html());
+					} else if (by.paw || by.hasRank('+', this.room)) {
+						Parser.pendingImageNumber++;
+						Parser.pendingImages[Parser.pendingImageNumber] = img;
+						var text = by.name + " wishes to share:<br>";
+						text += img.maxSize(200, 180).html();
+						text += "<center><button name=\"send\" value=\"/pm " + config.nick + ", " + config.commandcharacter + "approveimage " + Parser.pendingImageNumber + "\">Approve</button></center>"
+						
+						var artRoom = getRoom("art");
+						var onlineAuth = [];
+						for (var mod in artRoom.auth) {
+							if (artRoom.auth[mod] === "@" || artRoom.auth[mod] === "#") {
+								if (artRoom.users.indexOf(mod) > -1) onlineAuth.push(mod)
+							}
+						}
+						var i = 0;
+						var sayTimer = setInterval(function() {
+							artRoom.say("/pminfobox " + onlineAuth[i] + ", " + text);
+							if (++i === onlineAuth.length) clearInterval(sayTimer);
+						}, 700);
+					}
+				}).catch(e => {
+					// handled in tool itself
+				});
+			} 			
+			if (linkParts[0] !== 'i' && (linkParts[0] === "imgur" || linkParts[1] === "imgur")) {
+				// find image from imgur links
+				Tools.readHTMLfromURL(link).then(data => {
+					var imageContainerIndex = data.indexOf('class="post-image-container"');
+					if (imageContainerIndex !== - 1) {
+						var buffer = data.substr(imageContainerIndex + 29); //narrow to image container
+						buffer = buffer.substr(buffer.indexOf('<img')); //narrow to image tag
+						buffer = buffer.substr(buffer.indexOf('src="') + 5); //narrow to src tag
+						var imageLink = buffer.substr(0, buffer.indexOf('" ')); //get end of tag
+						if (imageLink.substr(0, 2) === "//") Parser.parseUrl.call(Parser, "http:" + imageLink, by);
+					}
+				}).catch(e => {
+					// handled in tools
+				});
+			}
 		}
 	},
 

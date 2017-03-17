@@ -8,7 +8,6 @@
 var sys = require('sys');
 var Promise = require('promise');
 
-var imagePendingNumber = Math.floor(Math.random() * 98000) + 1;
 var middleButton = '<a href="http://www.smogon.com/forums/threads/ps-art-room-contest-summer-vacation.3573290/"><img src="https://i.gyazo.com/2f8c3f7fa792629d037c8ba867d912ab.gif" width="105" height="30"></a>';
 const BAR = '|'; //makes this character accessible with the eval command
 const pokemonTypes = ["normal","fire","water","electric","grass","ice","fighting","poison","flying","ground","psychic","bug","rock","ghost","dragon","dark","steel","fairy"];
@@ -198,29 +197,11 @@ exports.commands = {
 
 		Tools.getImageData(link, by).then(img => {
 			if (room.pm) {
-				imagePendingNumber++;
-				self.pendingImages[imagePendingNumber] = img;
+				Parser.pendingImageNumber++;
+				self.pendingImages[Parser.pendingImageNumber] = img;
 				var text = by.name + " wishes to share:<br>";
-				if (img.h > 180 || img.w > 180) {
-					if (img.orientation === 'p') {
-						img.res = img.h / 180;
-						display.h = 180;
-						display.w = Math.floor(img.w / img.res);
-					} else {
-						img.res = img.w / 180;
-						display.h = Math.floor(img.h / img.res);
-						display.w = 180;
-					}
-				} else {
-					display.h = img.h;
-					display.w = img.w;
-				}
-				text += "<div title=\"Click for full res: " + img.w + "/" + img.h + "\">";
-				text += "<a href=\"" + link + "\">";
-				text += "<img src=\"" + link + "\" width=\"" + display.w + "\" height=\"" + display.h + "\">";
-				text += "</a></div>";
-
-				text += "<center><button name=\"send\" value=\"/pm " + config.nick + ", " + config.commandcharacter + "approveimage " + imagePendingNumber + "\">Approve</button></center>"
+				text += img.maxSize(200, 180).html();
+				text += "<center><button name=\"send\" value=\"/pm " + config.nick + ", " + config.commandcharacter + "approveimage " + Parser.pendingImageNumber + "\">Approve</button></center>"
 				
 				var artRoom = getRoom("art");
 				var onlineAuth = [];
@@ -235,28 +216,7 @@ exports.commands = {
 					if (++i === onlineAuth.length) clearInterval(sayTimer);
 				}, 700);
 			} else {
-				if (img.h > 500 || img.w > 500) {
-					if (img.orientation === 'p') {
-						img.res = img.h / 500;
-						display.h = 500;
-						display.w = Math.floor(img.w / img.res);
-					} else {
-						img.res = img.w / 500;
-						display.h = Math.floor(img.h / img.res);
-						display.w = 500;
-					}
-				} else {
-					display.h = img.h;
-					display.w = img.w;
-				}
-	
-				var text = "/addhtmlbox ";
-				text += "<div title=\"Click for full res: " + img.w + "/" + img.h + "\">";
-				text += "<a href=\"" + link + "\">";
-				text += "<img src=\"" + link + "\" width=\"" + display.w + "\" height=\"" + display.h + "\">";
-				text += "</a></div>";
-				room.say(text);
-				room.say("/modnote " + by.id + " shared image: " + link);
+				room.say("/addhtmlbox " + img.maxSize(500, 500).html());
 			}
 		}).catch(e => {
 			room.say("Was unable to load image from link.");
@@ -269,30 +229,9 @@ exports.commands = {
 		if (!by.hasRank("@", artRoom)) return false;
 		arg = arg.trim();
 		if (this.pendingImages[arg]) {
-			var display = {'h': 0, 'w': 0};
 			var img = this.pendingImages[arg];
-
-			if (img.h > 500 || img.w > 500) {
-				if (img.orientation === 'p') {
-					img.res = img.h / 500;
-					display.h = 500;
-					display.w = Math.floor(img.w / img.res);
-				} else {
-					img.res = img.w / 500;
-					display.h = Math.floor(img.h / img.res);
-					display.w = 500;
-				}
-			} else {
-				display.h = img.h;
-				display.w = img.w;
-			}
-			var text = "/addhtmlbox ";
-			text += "<div title=\"Click for full res: " + img.w + "/" + img.h + "\">";
-			text += "<a href=\"" + img.link + "\">";
-			text += "<img src=\"" + img.link + "\" width=\"" + display.w + "\" height=\"" + display.h + "\">";
-			text += "</a></div>shared by <b>" + img.user + "</b>";
-			artRoom.say(text);
-			artRoom.say("/modnote " + by.id + " shared image: " + img.link);
+			artRoom.say("/addhtmlbox " + img.maxSize(500, 300).html());
+			artRoom.say("/modnote " + by.id + " shared image: " + img.src);
 
 			delete this.pendingImages[arg];
 		}
