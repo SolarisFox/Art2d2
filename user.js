@@ -159,7 +159,7 @@ exports.user = function (name) {
 			var room = Rooms[i];
 			if (room.pm) continue;
 			if (!room.canHTML()) continue;
-			if (room.users.indexOf(this.id) > -1) return room.id;
+			if (room.users.indexOf(this.currentId) > -1) return room.id;
 		}
 		return false;
 	};
