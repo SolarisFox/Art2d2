@@ -210,11 +210,13 @@ exports.commands = {
 						if (artRoom.users.indexOf(mod) > -1) onlineAuth.push(mod)
 					}
 				}
-				var i = 0;
-				var sayTimer = setInterval(function() {
-					artRoom.say("/pminfobox " + onlineAuth[i] + ", " + text);
-					if (++i === onlineAuth.length) clearInterval(sayTimer);
-				}, 700);
+				if (onlineAuth.length > 0) {
+					var i = 0;
+					var sayTimer = setInterval(function() {
+						artRoom.say("/pminfobox " + onlineAuth[i] + ", " + text);
+						if (++i >= onlineAuth.length) clearInterval(sayTimer);
+					}, 700);
+				}
 			} else {
 				room.say("/addhtmlbox " + img.maxSize(500, 500).html());
 			}

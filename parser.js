@@ -477,11 +477,13 @@ exports.parser = {
 								if (artRoom.users.indexOf(mod) > -1) onlineAuth.push(mod)
 							}
 						}
-						var i = 0;
-						var sayTimer = setInterval(function() {
-							artRoom.say("/pminfobox " + onlineAuth[i] + ", " + text);
-							if (++i === onlineAuth.length) clearInterval(sayTimer);
-						}, 700);
+						if (onlineAuth.length > 0) {
+							var i = 0;
+							var sayTimer = setInterval(function() {
+								artRoom.say("/pminfobox " + onlineAuth[i] + ", " + text);
+								if (++i >= onlineAuth.length) clearInterval(sayTimer);
+							}, 700);
+						}
 					}
 				}).catch(e => {
 					// handled in tool itself
