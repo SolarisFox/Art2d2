@@ -369,7 +369,7 @@ exports.parser = {
 		message = message.trim();
 
 		// auto accept room invitations
-		if (message.substr(0,8) === '/invite ' && by.hasRank('%')) send("|/join " + message.substr(8));
+		if (message.substr(0, 8) === '/invite ' && by.hasRank('%')) send("|/join " + message.substr(8));
 
 		// parse commands
 		if (message.substr(0, config.commandcharacter.length) === config.commandcharacter) {
