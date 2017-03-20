@@ -157,7 +157,7 @@ global.User = require('./user.js').user;
 global.Room = require('./room.js').room;
 
 // JSON files
-var jsons = ["settings", "messages", "dailydraws", "roomintros", "galleries", "rpdata"];
+var jsons = ["settings", "messages", "dailydraws", "roomintros", "galleries", "rpdata", "roompaws"];
 for (var i = 0; i < jsons.length; i++) {
 	Data[jsons[i]] = {};
 	try {
@@ -166,7 +166,6 @@ for (var i = 0; i < jsons.length; i++) {
 	} catch (e) {} // file doesn't exist [yet]
 }
 if (!Data.settings.commands) Data.settings.commands = {};
-if (!Data.settings.roompaw) Data.settings.roompaw = {};
 
 var connect = function(retry) {
 	if (retry) {

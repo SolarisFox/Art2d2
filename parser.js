@@ -34,7 +34,13 @@ exports.parser = {
 			}
 		}
 
-		//clear out inactive messages
+		//delete old roompaws
+		for (var user in Data.roompaws) {
+			if (curTime - Data.roompaws[user] > 30 * DAYS) delete Data.roompaws[user];
+		}
+		Tools.writeJSON('roompaws', Data.roompaws);
+
+		//clear out old messages
 		for (var user in Data.messages) {
 			if (curTime - Data.messages[user].timestamp > 30 * DAYS) delete Data.messages[user];
 		}

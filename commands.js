@@ -66,9 +66,15 @@ exports.commands = {
 	test: function(arg, by, room) {
 		// DO NOT REMOVE THIS LINE
 		if (!by.isSysOp()) return false;
+		try {
 		// =======================
 
-		
+
+
+		// =======================
+		} catch (e) {
+			console.log(e.stack);
+		}
 	},
 	say: function(arg, by, room) {
 		if (!by.isSysOp()) return false;
@@ -440,29 +446,41 @@ exports.commands = {
 	roompaw: function(arg, by, room) {
 		if (!by.hasRank('@', getRoom('art')) || room.pm) return false;
 		if (!arg) return room.say('Who shall be roompaw\'d?');
-		var users = arg.split(', ');
-		var errors = [];
-		for (var i = 0; i < users.length; i++) {
-			var user = toId(users[i]);
-			if (Data.settings.roompaw[user]) { 
-				errors.push(users.splice(i, 1)); 
-				i--;
-				continue;
-			}
-			Data.settings.roompaw[user] = 1;
-			getUser(user).paw = true;
-			
-		}
-		Tools.writeJSON("settings", Data.settings);
-		if (errors.length) room.say(errors.join(', ') + (errors.length > 1 ? ' are' : ' is') + ' already Roompaw\'d.');
-		if (users.length) { 
-			room.say(users.join(', ') + ' has been promoted to Roompaw!');
-			room.say('/modnote ' + users.join(', ') + ' has been given roompaw by ' + by.id);
+		var target = toId(arg);
+		if (!Users[target]) return room.say("User '" + arg.trim() + "' not found.");
+		var user = getUser(target);
+		if (user.paw) return room.say(user.name + " already has roompaw.");
+		user.paw = true;
+		Data.roompaws[user.id] = Date.now();
+		Tools.writeJSON("Roompaws", Data.roompaws);
+		room.say(user.name + ' has been promoted to Roompaw!');
+		room.say('/modnote ' + user.id + ' has been given roompaw by ' + by.id);
+	},
+
+	unpaw: "roomunpaw",
+	unroompaw: "roomunpaw",
+	roomunpaw: function(arg, by, room) {
+		if (!by.hasRank('@', getRoom('art')) || room.pm) return false;
+		if (!arg) return room.say('Who shall have roompaw removed?');
+		var target = toId(arg);
+		if (Users[target]) {
+			var user = getUser(target);
+			if (!user.paw) return room.say(user.name + " does not currently have roompaw.");
+			user.paw = false;
+			delete Data.roompaws[user.id];
+			Tools.writeJSON("Roompaws", Data.roompaws);
+			room.say(user.name + " no longer has roompaw.");
+			room.say('/modnote ' + user.id + ' had roompaw removed by ' + by.id);
+		} else {
+			if (!Data.roompaws[target]) return room.say(target + " does not currently have roompaw.");
+			delete Data.roompaws[target];
+			room.say(target + " no longer has roompaw.");
+			room.say('/modnote ' + target + ' had roompaw removed by ' + by.id);
 		}
 	},
 
 	 /**
-	 * Data.PAD Commands
+	 * PAD Commands
 	 *
 	 * Commands using the Puzzle and Dragons api
 	 */

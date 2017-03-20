@@ -44,7 +44,7 @@ exports.user = function (name) {
 	this.id = toId(name);
 	this.currentId = this.id;
 	this.rank = checkGolbalAuth(this.name);
-	this.paw = (Data.settings.roompaw[this.id]) ? true : false;
+	this.paw = (Data.roompaws[this.id]) ? true : false;
 	this.alts = [];
 	this.gallery = Data.galleries[this.id] || "";
 	this.lastSeen = Date.now();
@@ -81,6 +81,7 @@ exports.user = function (name) {
 	};
 	this.update = function() {
 		this.lastSeen = Date.now();
+		if (this.paw) Data.roompaws[this.id] = this.lastSeen;
 		//Send pending mail
 		if (Data.messages[this.id]) {
 			for (var msgNumber in Data.messages[this.id]) {
@@ -128,7 +129,7 @@ exports.user = function (name) {
 			} else { // username hasn't been seen before
 				Users[this.currentId] = this.id;
 				if (ranks.indexOf(this.rank) < ranks.indexOf(this.name.charAt(0))) checkGolbalAuth(this.name);
-				if (!this.paw) this.paw = (Data.settings.roompaw[this.currentId]) ? true : false;
+				if (!this.paw) this.paw = (Data.roompaws[this.currentId]) ? true : false;
 				if (!this.gallery) this.gallery = Data.galleries[this.currentId] || "";
 			}
 		}
