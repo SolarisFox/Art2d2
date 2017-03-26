@@ -83,23 +83,22 @@ exports.user = function (name) {
 		this.lastSeen = Date.now();
 		if (this.paw) Data.roompaws[this.id] = this.lastSeen;
 		//Send pending mail
+		var sent = false;
 		if (Data.messages[this.id]) {
-			for (var msgNumber in Data.messages[this.id]) {
-				if (msgNumber === 'timestamp') continue;
-				this.say(Data.messages[this.id][msgNumber]);
+			for (var i = 0; i < Data.messages[this.id].mail.length; i++) {
+				this.say(Data.messages[this.id].mail[i]);
 			}
-			delete Data.messages[this.id];
+			sent = delete Data.messages[this.id];
 		}
 		for (var i = 0; i < this.alts.length; i++) {
 			if (Data.messages[this.alts[i]]) {
-				for (var msgNumber in Data.messages[this.alts[i]]) {
-					if (msgNumber === 'timestamp') continue;
-					this.say(Data.messages[this.alts[i]][msgNumber]);
+				for (var j = 0; j < Data.messages[this.alts[i]].mail.length; j++) {
+					this.say(Data.messages[this.alts[i]].mail[j]);
 				}
-				delete Data.messages[this.alts[i]];
+				sent = delete Data.messages[this.alts[i]];
 			}
 		}
-		Tools.writeJSON('messages', Data.messages);
+		if (sent) Tools.writeJSON('messages', Data.messages);
 	};
 	this.newAlt = function(newName) {
 		if (this.name === newName) return;

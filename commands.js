@@ -422,25 +422,24 @@ exports.commands = {
 	msg: 'message',
 	message: function(arg, by, room) {
 		if (!by.paw && !by.canUse('message', getRoom("art"))) return by.say('``\mail`` is only available to users ' + Data.settings.commands.message.art || config.defaultrank + ' and above and those with "roompaw".');
-		var user = toId(arg.split(', ')[0]);
-		if (user.length > 18 || user.length === 0) return room.say('That\'s not a real username! >:I');
-		var message = by.name + ': ' + arg.substr(arg.split(', ')[0].length + 2);
-		if (message.length < by.length + 3) return room.say('You forgot to include the message! D:');
-		if (['art2d2'].indexOf(user) > -1) return by.say('/me chews up mail.');
+		var parts = arg.split(', ');
+		var target = toId(parts[0]);
+		if (Users[target]) target = getUser(target).id;
+		if (target.length > 18 || target.length === 0) return room.say('That\'s not a real username! >:I');
+		var message = by.name + ': ' + parts.slice(1).join(', ');
+		if (message.length < by.name.length + 3) return room.say('You forgot to include the message! D:');
+		if (['art2d2', 'zarel'].indexOf(target) > -1) return by.say('/me chews up mail.');
 		if (!Data.messages) Data.messages = {};
-		if (!Data.messages[user]) {
-			Data.messages[user] = {};
-			Data.messages[user].timestamp = Date.now();
+		if (!Data.messages[target]) {
+			Data.messages[target] = {
+				timestamp: Date.now(),
+				mail: []
+			};
 		}
-		if (Data.messages[user]["4"]) return by.say(user + '\'s message inbox is full.');
-		var msgNumber = -1;
-		for (var i in Data.messages[user]) {
-			msgNumber++;
-		}
-		msgNumber = "" + msgNumber;
-		Data.messages[user][msgNumber] = message;
+		if (Data.messages[target].mail.length >= 3) return by.say(target + "'s message inbox is full.");
+		Data.messages[target].mail.push(message);
 		Tools.writeJSON("messages", Data.messages);
-		by.say('Your message has been sent to ' + user + '.');
+		by.say('Your message has been sent to ' + target + '.');
 	},
 
 	roompaw: function(arg, by, room) {
