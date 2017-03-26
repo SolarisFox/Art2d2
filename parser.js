@@ -18,6 +18,7 @@ const HOURS = 60 * MINUTES;
 const DAYS = 24 * HOURS;
 
 exports.parser = {
+	uptime: Date.now(),
 	actionUrl: url.parse('https://play.pokemonshowdown.com/~~' + config.serverid + '/action.php'),
 	room: {},
 	lastMessage: "",
@@ -26,6 +27,9 @@ exports.parser = {
 	pendingImageNumber: Math.floor(Math.random() * 98000) + 1,
 	chatTimer: setInterval(function() {
 		var curTime = Date.now();
+		DebugTools.info("     USAGE STATISTICS".green);
+		DebugTools.info("==========================".green);
+		DebugTools.info(("uptime:   " + Tools.getTimeAgo(Parser.uptime)).grey);
 
 		//clear out inactive users
 		for (var user in Users) {
@@ -33,18 +37,20 @@ exports.parser = {
 				Users[user].destroy();
 			}
 		}
-
-		//delete old roompaws
-		for (var user in Data.roompaws) {
-			if (curTime - Data.roompaws[user] > 30 * DAYS) delete Data.roompaws[user];
-		}
-		Tools.writeJSON('roompaws', Data.roompaws);
+		DebugTools.info(("users:    " + Object.size(Users)).grey);
 
 		//clear out old messages
 		for (var user in Data.messages) {
 			if (curTime - Data.messages[user].timestamp > 30 * DAYS) delete Data.messages[user];
 		}
 		Tools.writeJSON('messages', Data.messages);
+		DebugTools.info(("Messages: " + Object.size(Data.messages)).grey);
+
+		//delete old roompaws
+		for (var user in Data.roompaws) {
+			if (curTime - Data.roompaws[user] > 30 * DAYS) delete Data.roompaws[user];
+		}
+		Tools.writeJSON('roompaws', Data.roompaws);
 
 		//reset rp keywords and data
 		for (var user in Data.rpdata) {
@@ -59,7 +65,7 @@ exports.parser = {
 
 		// clear out old image request
 		for (var request in Parser.pendingImages) {
-			if (curTime - Parser.pendingImages[request].timestamp > 10 * MINUTES) delete Parser.pendingImages[request];
+			if (curTime - Parser.pendingImages[request].created > 30 * MINUTES) delete Parser.pendingImages[request];
 		}
 
 		// change out art roomintro
@@ -72,6 +78,8 @@ exports.parser = {
 			Commands.roomintro.call(Parser, Parser.currentIntro, getUser(config.nick), getRoom('art'));
 		}
 		Tools.writeJSON('roomintros', Data.roomintros);
+
+		DebugTools.info("==========================".green);
 	}, 30 * MINUTES),
 	currentIntro: 0,
 	roomintroTimer: Date.now(),

@@ -218,7 +218,7 @@ exports.tools = {
 		return formattedDate;
 	},
 
-	getTimeAgo: function(time) {
+	getTimeAgo: function(time, full) {
 		time = Date.now() - time;
 		time = Math.round(time/1000); // rounds to nearest second
 		var seconds = time%60;
@@ -240,7 +240,11 @@ exports.tools = {
 			}
 		}
 		if (!times.length) times.push('0 seconds');
-		return times.join(', ');
+		if (full) {
+			return times.join(', ');
+		} else {
+			return times[0];
+		}
 	},
 	
 	markupHTML: function(text) {
