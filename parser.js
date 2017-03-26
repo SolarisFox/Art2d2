@@ -273,8 +273,16 @@ exports.parser = {
 					}
 				}
 				send("|/roomauth " + this.room.id);
+				// parse some initially loaded data, such as roomintro
+				var line = message.split('\n');
+				for (var i = 0; i < line.length; i++) {
+					if (line[i].substr(1, 4) === "html" || 
+						line[i].substr(1, 3) === "raw" ||
+						line[i].substr(1, 5) === "title") this.message('>' + this.room.id + '\n' + line[i]);
+				}
+				break;
 			case 'title':
-				DebugTools.ok('joined ' + spl[0].substr(1));
+				DebugTools.ok('joined ' + spl[2]);
 				break;
 			case 'c':
 				var by = getUser(spl[2]);
@@ -312,9 +320,9 @@ exports.parser = {
 				break;
 			case 'raw':
 				// get current roomintro number
-				if (spl[2].substr(0, 42) === '<div class="infobox infobox-limited"><!--#') {
-					DebugTools.info("Roomintro number: " + spl[2].substr(42, spl[2].substr(42).indexOf("-->")));
-					this.currentIntro = parseInt(spl[2].substr(42, spl[2].substr(42).indexOf("-->")));
+				if (spl[2].substr(0, 73) === '<div class="infobox infobox-roomintro"><div class="infobox-limited"><!--#') {
+					DebugTools.info("Roomintro number: " + spl[2].substr(73, spl[2].substr(73).indexOf("-->")));
+					this.currentIntro = parseInt(spl[2].substr(73, spl[2].substr(73).indexOf("-->")));
 					if (Data.roomintros[this.currentIntro]) {
 						this.roomintroTimer = Data.roomintros[this.currentIntro].lastUsed;
 					} else {
@@ -323,7 +331,7 @@ exports.parser = {
 				}
 				break;
 			case 'html':
-				// error Data.messages from the server
+				// error messages from the server
 				//DebugTools.info(this.lastReply);
 				if (spl[2].substr(0, 27) === '<div class="message-error">') {
 					var errMsg = spl[2].substring(27, spl[2].indexOf('</div>'))
