@@ -69,11 +69,16 @@ exports.parser = {
 		}
 
 		// change out art roomintro
-		if (curTime - Parser.roomintroTimer > 20 * HOURS) {
+		if (curTime - Parser.roomintroTimer > 20 * HOURS && Object.size(Data.roomintros) !== 0 && getRoom("art").canHTML()) {
 			var nextIntro = {};
-			do {
-				nextIntro = Tools.sample(Data.roomintros)[0];
-			} while (curTime - nextIntro.lastUsed < 5 * DAYS);
+			var introKeys = Tools.shuffle(Object.keys(Data.roomintros));
+			for (var i = 0; i < introKeys.length; i++) {
+				nextIntro = Data.roomintros[introKeys[i]];
+				if (curTime - nextIntro.lastUsed < Object.size(Data.roomintros) * 0.7 * DAYS) break;
+				// since the number of required duration since last use is based on the number of added intros
+				// the break statement should be reached eventually, but just in case if the array runs out
+				// it'll just use the last intro in the shuffled list
+			}
 			Parser.currentIntro = nextIntro.index;
 			Commands.roomintro.call(Parser, Parser.currentIntro, getUser(config.nick), getRoom('art'));
 		}
