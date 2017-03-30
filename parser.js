@@ -484,7 +484,7 @@ exports.parser = {
 		var linkType = link.substr(0, link.indexOf("//") + 2);
 		var linkBody = link.substr(linkType.length);
 		var linkParts = linkBody.split('.');
-		if (this.room.id === "art") {
+		if (room.id === "art" && room.canHTML()) {
 			// try to display images
 			if (/(png|gif|jpe?g|bmp|psd)/i.test(linkParts[linkParts.length - 1])) {
 				Tools.getImageData(link, by).then(img => {
