@@ -304,24 +304,24 @@ exports.parser = {
 				by.update();
 				this.room.pm = by;
 				this.parseMessage(by, spl[4]);
-				this.room.pm = null;
 				break;
 			case 'N':
 				var by = getUser(spl[3]);
 				by.newAlt(spl[2]);
 				by.update();
-				this.room.users.push(by.currentId);
-				this.room.users.splice(this.room.users.indexOf(toId(spl[3])), 1);
+				if (toId(spl[2]) === toId(spl[3])) break; // the user just changed name formatting
+				this.room.addUser(spl[2]);
+				this.room.removeUser(spl[3]);
 				break;
 			case 'J': case 'j':
 				var by = getUser(spl[2]);
 				by.update();
-				this.room.users.push(by.currentId);
+				this.room.addUser(spl[2]);
 				break;
 			case 'l': case 'L':
 				var by = getUser(spl[2]);
 				by.update();
-				this.room.users.splice(this.room.users.indexOf(by.currentId), 1);
+				this.room.removeUser(spl[2]);
 				break;
 			case 'raw':
 				// get current roomintro number

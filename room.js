@@ -22,12 +22,26 @@ exports.room = function (name) {
 	this.ownRank = " ";
 	this.lastRP = 0;
 
+	this.addUser = function(username) {
+		var userid = toId(username);
+		if (this.users.indexOf(userid) > -1) {
+			DebugTools.error(username + ' joined ' + this.name + ' while already in the user list');
+		} else {
+			this.users.push(userid);
+		}
+	};
+	this.removeUser = function(username) {
+		var userid = toId(username);
+		if (Tools.removeElm(this.users, userid).length) { // returns 1 when error, otherwise returns 0
+			DebugTools.error(username + ' left ' + this.name + ' without being in the user list.');
+		}
+	};
 	this.canBroadcast = function() {
 		return ranks.indexOf(this.ownRank) > 0;
 	};
 	this.canAnnounce = function() {
 		return ranks.indexOf(this.ownRank) > 1;
-	}
+	};
 	this.canHTML = function() {
 		if (this.pm) return this.pm.canHTML();
 		return this.ownRank === "*";

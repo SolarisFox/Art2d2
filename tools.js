@@ -63,6 +63,21 @@ exports.tools = {
 		}
 	},
 
+	removeElm: function(array, element) {
+		if (Array.isArray(element)) {
+			var removed = [];
+			for (var i = 0; i < element.length; i++) {
+				removed = removed.concat(this.removeElm(array, element[i]));
+			}
+			return removed;
+		} else {
+			var index = array.indexOf(element);
+			if (index === -1) return [element];
+			array.splice(index, 1);
+			return [];
+		}
+	},
+
 	uncacheTree: function(root) {
 		var uncache = [require.resolve(root)];
 		do {
