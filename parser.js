@@ -485,6 +485,12 @@ exports.parser = {
 		var linkBody = link.substr(linkType.length);
 		var linkParts = linkBody.split('.');
 		if (room.id === "art" && room.canHTML()) {
+			// replace some specific tags
+			if (linkParts[0] === 'i' && linkParts[1] === 'cubeupload') {
+				return this.parseUrl("https://u" + linkBody.substr(1), by, room);
+			} else if (linkParts[0] === "pasteboard") {
+				return this.parseUrl("https://cdn.pbrd.co/images/" + linkParts[1].substr(3) + '.' + linkParts[2], by, room);
+			}
 			// try to display images
 			if (/(png|gif|jpe?g|bmp|psd)/i.test(linkParts[linkParts.length - 1])) {
 				Tools.getImageData(link, by).then(img => {
