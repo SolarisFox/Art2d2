@@ -493,7 +493,7 @@ exports.parser = {
 			}
 			// try to display images
 			if (/(png|gif|jpe?g|bmp|psd)/i.test(linkParts[linkParts.length - 1])) {
-				Tools.getImageData(link, by).then(img => {
+				Tools.getImageData(link).then(img => {
 					if (by.canUse('showimage', this.room)) {
 						this.room.say("/addhtmlbox " + img.maxSize(500, 300).html());
 					} else if (by.paw || by.hasRank('+', this.room)) {

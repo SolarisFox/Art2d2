@@ -201,7 +201,7 @@ exports.commands = {
 		if (!/\.(?:png|gif|jpe?g|bmp|psd)$/i.test(link)) return room.say('Link must be a JPG, GIF, or PNG file.');
 		var display = {'h': 0, 'w': 0};
 
-		Tools.getImageData(link, by).then(img => {
+		Tools.getImageData(link).then(img => {
 			if (room.pm) {
 				Parser.pendingImageNumber++;
 				self.pendingImages[Parser.pendingImageNumber] = img;

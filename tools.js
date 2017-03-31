@@ -169,7 +169,7 @@ exports.tools = {
 		});
 	},
 
-	getImageData: function(link, by) {
+	getImageData: function(link) {
 		return new Promise(function (fulfill, reject) {	
 			var options = url.parse(link);
 			var linkType = link.substr(0, 5) === "https" ? https : http;
