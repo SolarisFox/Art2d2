@@ -117,7 +117,14 @@ exports.user = function (name) {
 					}
 					if (ranks.indexOf(this.rank) < ranks.indexOf(oldObj.rank)) this.rank = oldObj.rank;
 					if (!this.paw) this.paw = oldObj.paw;
-					if (!this.gallery) this.gallery = oldObj.gallery;
+					if (oldObj.gallery) {
+						if (!this.gallery) {
+							this.gallery = Data.galleries[this.currentId];
+							Data.galleries[this.id] = Data.galleries[this.currentId];
+						}
+						delete Data.galleries[this.currentId];
+						Tools.writeJSON('galleries', Data.galleries);
+					}
 					
 					Users[oldObj.id] = this.id;
 				} else { // string pointer to another user object
@@ -129,7 +136,14 @@ exports.user = function (name) {
 				Users[this.currentId] = this.id;
 				if (ranks.indexOf(this.rank) < ranks.indexOf(this.name.charAt(0))) checkGolbalAuth(this.name);
 				if (!this.paw) this.paw = (Data.roompaws[this.currentId]) ? true : false;
-				if (!this.gallery) this.gallery = Data.galleries[this.currentId] || "";
+				if (Data.galleries[this.currentId]) {
+					if (!this.gallery) {
+						this.gallery = Data.galleries[this.currentId];
+						Data.galleries[this.id] = Data.galleries[this.currentId];
+					}
+					delete Data.galleries[this.currentId];
+					Tools.writeJSON('galleries', Data.galleries);
+				}
 			}
 		}
 	};

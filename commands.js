@@ -402,7 +402,7 @@ exports.commands = {
 			}
 		} else if (/^https?:\/\//.test(arg)) {
 			Data.galleries[by.id] = arg;
-			Tools.writeJSON('Data.galleries', Data.galleries);
+			Tools.writeJSON('galleries', Data.galleries);
 			by.gallery = arg;
 			room.say(by.name + "'s gallery has been set to: " + arg);
 		} else {
