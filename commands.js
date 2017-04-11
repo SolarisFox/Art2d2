@@ -406,7 +406,9 @@ exports.commands = {
 			by.gallery = arg;
 			room.say(by.name + "'s gallery has been set to: " + arg);
 		} else {
-			var foundLink = Data.galleries[toId(arg)];
+			var foundLink = "";
+			if (Users[toId(arg)]) foundLink = getUser(arg).gallery;
+			if (!foundLink) foundLink = Data.galleries[toId(arg)];
 			if (!foundLink) return room.say("No gallery was found for " + arg);
 			room.say(arg + "'s gallery: " + foundLink);
 		}
