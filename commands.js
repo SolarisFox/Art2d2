@@ -195,36 +195,40 @@ exports.commands = {
 	 */
 
 	showimage: function(arg, by, room) {
-		if (!room.pm && !by.canUse('showimage', room)) return false;
+		if (!room.canHTML()) return false;
 		var link = arg.trim();
 		if (!/^https?:\/\//.test(link)) return room.say('Link must use HTTP or HTTPS.');
 		if (!/\.(?:png|gif|jpe?g|bmp|psd)$/i.test(link)) return room.say('Link must be a JPG, GIF, or PNG file.');
-		var display = {'h': 0, 'w': 0};
+		var tarRoom = room;
 
 		Tools.getImageData(link).then(img => {
-			if (room.pm) {
+			if (by.canUse("showimage", tarRoom)) {
+				tarRoom.say("/addhtmlbox " + img.maxSize(500, 500).html());
+			} else if (by.paw || by.hasRank('+', tarRoom)) {
+				if (room.pm) tarRoom = getRoom("art");
+				if (tarRoom.isPrivate) return false;
 				Parser.pendingImageNumber++;
-				self.pendingImages[Parser.pendingImageNumber] = img;
-				var text = by.name + " wishes to share:<br>";
+				Parser.pendingImages[Parser.pendingImageNumber] = {
+					img: img,
+					room: tarRoom
+				};
+				var text = by.name + "( " + tarRoom.id + ") wishes to share:<br>";
 				text += img.maxSize(200, 180).html();
 				text += "<center><button name=\"send\" value=\"/pm " + config.nick + ", " + config.commandcharacter + "approveimage " + Parser.pendingImageNumber + "\">Approve</button></center>"
 				
-				var artRoom = getRoom("art");
 				var onlineAuth = [];
-				for (var mod in artRoom.auth) {
-					if (artRoom.auth[mod] === "@" || artRoom.auth[mod] === "#") {
-						if (artRoom.users.indexOf(mod) > -1) onlineAuth.push(mod)
+				for (var mod in tarRoom.auth) {
+					if (tarRoom.auth[mod] === "@" || tarRoom.auth[mod] === "#") {
+						if (tarRoom.users.indexOf(mod) > -1) onlineAuth.push(mod)
 					}
 				}
 				if (onlineAuth.length > 0) {
 					var i = 0;
 					var sayTimer = setInterval(function() {
-						artRoom.say("/pminfobox " + onlineAuth[i] + ", " + text);
+						tarRoom.say("/pminfobox " + onlineAuth[i] + ", " + text);
 						if (++i >= onlineAuth.length) clearInterval(sayTimer);
 					}, 700);
 				}
-			} else {
-				room.say("/addhtmlbox " + img.maxSize(500, 500).html());
 			}
 		}).catch(e => {
 			room.say("Was unable to load image from link.");
@@ -233,16 +237,15 @@ exports.commands = {
 
 	// This command should be called via html button
 	approveimage: function (arg, by, room) {
-		var artRoom = getRoom("art");
-		if (!by.hasRank("@", artRoom)) return false;
-		arg = arg.trim();
-		if (this.pendingImages[arg]) {
-			var img = this.pendingImages[arg];
-			artRoom.say("/addhtmlbox " + img.maxSize(500, 300).html());
-			artRoom.say("/modnote " + by.id + " shared image: " + img.src);
+		if (!this.pendingImages[arg]) return false;
+		var tarRoom = this.pendingImages[arg].room;
+		if (!by.hasRank("@", tarRoom)) return false;
 
-			delete this.pendingImages[arg];
-		}
+		var img = this.pendingImages[arg].img;
+		tarRoom.say("/addhtmlbox " + img.maxSize(500, 300).html());
+		tarRoom.say("/modnote " + by.id + " shared image: " + img.src);
+
+		delete this.pendingImages[arg];
 	},
 
 	clearimages: function(arg, by, room) {

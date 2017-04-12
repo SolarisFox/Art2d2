@@ -65,7 +65,7 @@ exports.parser = {
 
 		// clear out old image request
 		for (var request in Parser.pendingImages) {
-			if (curTime - Parser.pendingImages[request].created > 30 * MINUTES) delete Parser.pendingImages[request];
+			if (curTime - Parser.pendingImages[request].img.created > 30 * MINUTES) delete Parser.pendingImages[request];
 		}
 
 		// change out art roomintro
@@ -494,26 +494,28 @@ exports.parser = {
 			// try to display images
 			if (/(png|gif|jpe?g|bmp|psd)/i.test(linkParts[linkParts.length - 1])) {
 				Tools.getImageData(link).then(img => {
-					if (by.canUse('showimage', this.room)) {
-						this.room.say("/addhtmlbox " + img.maxSize(500, 300).html());
-					} else if (by.paw || by.hasRank('+', this.room)) {
+					if (by.canUse('showimage', room)) {
+						room.say("/addhtmlbox " + img.maxSize(500, 300).html());
+					} else if (!room.isPrivate && (by.paw || by.hasRank('+', room))) {
 						Parser.pendingImageNumber++;
-						Parser.pendingImages[Parser.pendingImageNumber] = img;
-						var text = by.name + " wishes to share:<br>";
+						Parser.pendingImages[Parser.pendingImageNumber] = {
+							img: img,
+							room: room
+						};
+						var text = by.name + " (" + room.id + ") wishes to share:<br>";
 						text += img.maxSize(200, 180).html();
 						text += "<center><button name=\"send\" value=\"/pm " + config.nick + ", " + config.commandcharacter + "approveimage " + Parser.pendingImageNumber + "\">Approve</button></center>"
 						
-						var artRoom = getRoom("art");
 						var onlineAuth = [];
-						for (var mod in artRoom.auth) {
-							if (artRoom.auth[mod] === "@" || artRoom.auth[mod] === "#") {
-								if (artRoom.users.indexOf(mod) > -1) onlineAuth.push(mod)
+						for (var mod in room.auth) {
+							if (room.auth[mod] === "@" || room.auth[mod] === "#") {
+								if (room.users.indexOf(mod) > -1) onlineAuth.push(mod)
 							}
 						}
 						if (onlineAuth.length > 0) {
 							var i = 0;
 							var sayTimer = setInterval(function() {
-								artRoom.say("/pminfobox " + onlineAuth[i] + ", " + text);
+								room.say("/pminfobox " + onlineAuth[i] + ", " + text);
 								if (++i >= onlineAuth.length) clearInterval(sayTimer);
 							}, 700);
 						}
@@ -521,7 +523,7 @@ exports.parser = {
 				}).catch(e => {
 					// handled in tool itself
 				});
-			} 			
+			} 
 			if (linkParts[0] !== 'i' && (linkParts[0] === "imgur" || linkParts[1] === "imgur")) {
 				// find image from imgur links
 				Tools.readHTMLfromURL(link).then(data => {
