@@ -2,12 +2,14 @@
 ====================
 
 A chat bot for [Pokémon Showdown][1]
+
   [1]: http://www.pokemonshowdown.com/
 
 About
 -----
 
 This bot is primarily for the [Art room][2] and provides tools for drawing prompts.
+
   [2]: http://www.pokemonshowdown.com/art
 
 
@@ -21,7 +23,7 @@ Credits:
  - SolarisFox (Development)
  - TalkTakesTime (Development)
  - Quinella (Login)
- - Mofent (Development)
+ - Morfent (Development)
 
 License
 -------

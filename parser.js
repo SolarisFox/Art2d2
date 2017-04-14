@@ -232,7 +232,7 @@ exports.parser = {
 				}
 
 				if (spl[3] !== '1') {
-					error('failed to log in, still guest');
+					DebugTools.error('failed to log in, still guest');
 					process.exit(-1);
 				}
 
@@ -411,7 +411,7 @@ exports.parser = {
 				if (typeof Commands[cmd] === "function") {
 					Commands[cmd].call(this, arg, by, this.room);
 				} else {
-					error("invalid command type for " + cmd + ": " + (typeof Commands[cmd]));
+					DebugTools.error("invalid command type for " + cmd + ": " + (typeof Commands[cmd]));
 				}
 				return true; //if a message is a command it doesn't need to be parsed further
 			}
