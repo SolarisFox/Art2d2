@@ -105,7 +105,7 @@ if (!('existsSync' in fs)) {
 }
 
 if (!fs.existsSync('./config.js')) {
-	error('config.js doesn\'t exist; are you sure you copied config-example.js to config.js?');
+	DebugTools.error('config.js doesn\'t exist; are you sure you copied config-example.js to config.js?');
 	process.exit(-1);
 }
 
@@ -120,7 +120,7 @@ global.Tools = require('./tools.js').tools;
 
 var checkCommandCharacter = function() {
 	if (!/[^a-z0-9 ]/i.test(config.commandcharacter)) {
-		error('invalid command character; should at least contain one non-alphanumeric character');
+		DebugTools.error('invalid command character; should at least contain one non-alphanumeric character');
 		process.exit(-1);
 	}
 };
@@ -131,7 +131,7 @@ var watchFile = function() {
 	try {
 		return fs.watchFile.apply(fs, arguments);
 	} catch (e) {
-		error('your version of node does not support `fs.watchFile`');
+		DebugTools.error('your version of node does not support `fs.watchFile`');
 	}
 };
 
@@ -232,7 +232,6 @@ var connect = function(retry) {
 	var conStr = 'ws://' + config.server + ':' + config.port + '/showdown/' + id + '/' + str + '/websocket';
 	DebugTools.info('connecting to ' + conStr + ' - secondary protocols: ' + sys.inspect(config.secprotocols));
 	ws.connect(conStr, config.secprotocols);
-
 };
 
 connect();
