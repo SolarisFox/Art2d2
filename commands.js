@@ -1044,16 +1044,48 @@ exports.commands = {
 			move = Commands.randommove.call(this, "2,viable", self, dummyRoom);
 		}
 
+		//Code for generating a random name based on types generated
+		//Start by accessing the array from the capnamelist.js file in the data folder.
+		var foundName = false;
+		var t1Name = '';
+		var type1array = Data.Capnames[type[0]];
+		var type2array = Data.Capnames[type[1]];
+		while(!foundName){
+            t1Name = Tools.sample(type1array)[0]
+            if(t1Name.charAt(0) === '-'){ //Case Suffix, can't be first part of name. remove and reroll
+                Tools.removeElm(type1array, t1Name);
+            }else if(t1Name.charAt(0) === '+'){ //Case Prefix, remove '+' char from string and use
+                t1Name = t1Name.substr(1);
+                foundName = true;
+            }else{
+                foundName = true;
+            }
+		}
+		foundName = false;
+		var t2Name = '';
+		while(!foundName){ // Same stuff, but for second type
+            t2Name = Tools.sample(type2array)[0]
+            if(t2Name.charAt(0) === '+'){ //Case Prefix, can't be first part of name. remove and reroll
+                Tools.removeElm(type1array, t2Name);
+            }else if(t2Name.charAt(0) === '-'){ //Case Suffix, remove '-' char from string and use
+                t2Name = t2Name.substr(1);
+                foundName = true;
+            }else{
+                foundName = true;
+            }
+        }
+        var fullName = t1Name.charAt(0).toUpperCase() + t1Name.substr(1) + t2Name;
+        //That should be it for random name stuff - just have to add it to the output now:
 		var text = "";
 		if (!room.canHTML()) {
-			text = "``Random Fakemon:`` A **" + type.join("/") + "** Pokemon with **";
+			text = "``Random Fakemon:`` A **" + type.join("/") + "** Pokemon named "+ fullName + " with **";
 			text += ability[0] + "**. It's stats are ``" + stats.join(", ") + "`` (" + bst + " bst). ";
 			text += "It uses the move **" + move[0] + "**.";
 		} else {
 			text = '!htmlbox <table style="color:#444444;font-size:8pt">';
 			text += '<tr style="height:30px">';
 			text += '<td rowspan="3" style="width:40;vertical-align:top"><img src="http://i.imgur.com/Fx5wxDl.png" height="30" width="40"></img></td>'; // sprite
-			text += '<td colspan="6">Fakemon</td>'; // name
+			text += '<td colspan="6">'+ fullName +'</td>'; // name
 			text += '<td style="width:32px"><img src="//play.pokemonshowdown.com/sprites/types/' + type[0] + '.png" height="14" width="32"></img></td>'; //type 1
 			text += '<td style="width:32px">';
 			if (type.length === 2) text += '<img src="//play.pokemonshowdown.com/sprites/types/' + type[1] + '.png" height="14" width="32"></img>'; //type 2
