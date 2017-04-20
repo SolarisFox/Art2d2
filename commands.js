@@ -1050,7 +1050,7 @@ exports.commands = {
 		var type1array = Tools.shuffle(Data.Namelist[type[0]]);
 
 		var type2array = [];
-		if (type[1] === undefined) { //Checking for single type case
+		if (type.length === 1) { //Checking for single type case
 			type2array = Tools.shuffle(type1array);
 		} else {
 			type2array = Tools.shuffle(Data.Namelist[type[1]]);
