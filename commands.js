@@ -1046,7 +1046,6 @@ exports.commands = {
 
 		// Code for generating a random name based on types generated
 		// Start by accessing the array from the namelist.js file in the data folder.
-		var foundName = false;
 		var t1Name = '';
 		var type1array = Tools.shuffle(Data.Namelist[type[0]]);
 
@@ -1058,14 +1057,15 @@ exports.commands = {
 		}
 
 		// Grab our first word for the name
-		Tools.shuffle(Data.Namelist[type[1]]);
 		for (var i = 0; i < type1array.length; i++) {
 			if(type1array[i].charAt(0) === '+') {
 				// Case Prefix, remove '+' char from string and use
 				t1Name = type1array[i].substr(1)
+				break;
 			} else if(type1array[i] !== '-') {
 				// If our string isn't a suffix, it's still ok. No characters to remove.
 				t1Name = type1array[i]
+				break;
 			}
 			// Continue looping until we find a non-suffix
 		}
@@ -1075,9 +1075,11 @@ exports.commands = {
 			if(type2array[i].charAt(0) === '-') {
 				// Case Suffix, remove '-' char from string and use
 				t2Name = type2array[i].substr(1)
+				break;
 			} else if(type2array[i] !== '+') {
 				// If our string isn't a prefix, it's still ok. No characters to remove.
 				t2Name = type2array[i]
+				break;
 			}
 			// Continue looping until we find a non-prefix
 		}
