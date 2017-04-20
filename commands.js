@@ -1044,16 +1044,58 @@ exports.commands = {
 			move = Commands.randommove.call(this, "2,viable", self, dummyRoom);
 		}
 
+		// Code for generating a random name based on types generated
+		// Start by accessing the array from the namelist.js file in the data folder.
+		var t1Name = '';
+		var type1array = Tools.shuffle(Data.Namelist[type[0]]);
+
+		var type2array = [];
+		if (type.length === 1) { //Checking for single type case
+			type2array = Tools.shuffle(type1array);
+		} else {
+			type2array = Tools.shuffle(Data.Namelist[type[1]]);
+		}
+
+		// Grab our first word for the name
+		for (var i = 0; i < type1array.length; i++) {
+			if (type1array[i].charAt(0) === '+') {
+				// Case Prefix, remove '+' char from string and use
+				t1Name = type1array[i].substr(1)
+				break;
+			} else if (type1array[i] !== '-') {
+				// If our string isn't a suffix, it's still ok. No characters to remove.
+				t1Name = type1array[i]
+				break;
+			}
+			// Continue looping until we find a non-suffix
+		}
+		//Second word. Same stuff as the first, for the most part.
+		var t2Name = '';
+		for (var i = 0; i < type2array.length; i++) {
+			if (type2array[i].charAt(0) === '-') {
+				// Case Suffix, remove '-' char from string and use
+				t2Name = type2array[i].substr(1)
+				break;
+			} else if (type2array[i] !== '+') {
+				// If our string isn't a prefix, it's still ok. No characters to remove.
+				t2Name = type2array[i]
+				break;
+			}
+			// Continue looping until we find a non-prefix
+		}
+
+		var fullName = t1Name.charAt(0).toUpperCase() + t1Name.substr(1) + t2Name;
+		// That should be it for random name stuff - just have to add it to the output now:
 		var text = "";
 		if (!room.canHTML()) {
-			text = "``Random Fakemon:`` A **" + type.join("/") + "** Pokemon with **";
+			text = "``" + fullName + ":`` A **" + type.join("/") + "** Pokemon with **";
 			text += ability[0] + "**. It's stats are ``" + stats.join(", ") + "`` (" + bst + " bst). ";
 			text += "It uses the move **" + move[0] + "**.";
 		} else {
 			text = '!htmlbox <table style="color:#444444;font-size:8pt">';
 			text += '<tr style="height:30px">';
 			text += '<td rowspan="3" style="width:40;vertical-align:top"><img src="http://i.imgur.com/Fx5wxDl.png" height="30" width="40"></img></td>'; // sprite
-			text += '<td colspan="6">Fakemon</td>'; // name
+			text += '<td colspan="6">'+ fullName +'</td>'; // name
 			text += '<td style="width:32px"><img src="//play.pokemonshowdown.com/sprites/types/' + type[0] + '.png" height="14" width="32"></img></td>'; //type 1
 			text += '<td style="width:32px">';
 			if (type.length === 2) text += '<img src="//play.pokemonshowdown.com/sprites/types/' + type[1] + '.png" height="14" width="32"></img>'; //type 2
@@ -1335,7 +1377,7 @@ exports.commands = {
 		if (!by.canUse('fox', room) && !room.pm) return false;
 
 		var whatTheFoxSays = [
-	 		"Yip!", "Yarp!", "Growlf!", "Myron?!", "/me wags tail",
+			"Yip!", "Yarp!", "Growlf!", "Myron?!", "/me wags tail",
 			"/me bites " + by.name + "", "Yip~ <3", "/me draws furiously",
 			":3", ";3", "^w^", "OwO", "=^.~=", ">:3", "^^;w;^^",
 			"/me pounces " + by.name + "", "/me licks " + by.name + "",
