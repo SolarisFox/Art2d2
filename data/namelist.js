@@ -1,5 +1,5 @@
-exports.capnamelist = {
-  "normal": [
+exports.namelist = {
+  "Normal": [
     "doggo",
     "veryfastdoggo",
     "fuzz",
@@ -31,7 +31,7 @@ exports.capnamelist = {
     "+cato",
     "-doggly"
   ],
-  "grass": [
+  "Grass": [
     "+applo",
     "lemon",
     "+pumpki",
@@ -65,7 +65,7 @@ exports.capnamelist = {
     "willo",
     "shrub"
   ],
-  "fire": [
+  "Fire": [
     "+pyro",
     "+hot",
     "fllama",
@@ -92,7 +92,7 @@ exports.capnamelist = {
     "-tion",
     "+explo"
   ],
-  "water": [
+  "Water": [
     "+hydro",
     "+octo",
     "fishee",
@@ -134,7 +134,7 @@ exports.capnamelist = {
     "-dolpho",
     "+aqua"
   ],
-  "ice": [
+  "Ice": [
     "-sicle",
     "stalagmite",
     "stalactite",
@@ -160,7 +160,7 @@ exports.capnamelist = {
     "+sno",
     "polar"
   ],
-  "electric": [
+  "Electric": [
     "-sparky",
     "ohm",
     "-ahgod",
@@ -203,7 +203,7 @@ exports.capnamelist = {
     "-tery",
     "+bat"
   ],
-  "flying":[
+  "Flying":[
     "aero",
     "bird",
     "owl",
@@ -229,7 +229,7 @@ exports.capnamelist = {
     "nimbus",
     "kestral"
   ],
-  "psychic":[
+  "Psychic":[
     "-spoonie",
     "+psy",
     "know",
@@ -259,7 +259,7 @@ exports.capnamelist = {
     "connect",
     "+levi"
   ],
-  "dragon": [
+  "Dragon": [
     "dragon",
     "-dra",
     "-scale",
@@ -295,7 +295,7 @@ exports.capnamelist = {
     "-ary",
     "-oyal"
   ],
-  "fighting": [
+  "Fighting": [
     "fist",
     "hit",
     "punch",
@@ -333,7 +333,7 @@ exports.capnamelist = {
     "-rekt"
 
   ],
-  "ghost":[
+  "Ghost":[
     "spook",
     "ghast",
     "boo",
@@ -358,7 +358,7 @@ exports.capnamelist = {
     "skul"
   ],
 
-  "dark": [
+  "Dark": [
     "darth",
     "sith",
     "evil",
@@ -390,7 +390,7 @@ exports.capnamelist = {
     "sythe"
   ],
 
-  "steel": [
+  "Steel": [
     "sword",
     "cyborg",
     "shield",
@@ -414,7 +414,7 @@ exports.capnamelist = {
     "clank"
     ],
 
-  "fairy": [
+  "Fairy": [
     "-fairy",
     "-fable",
     "-myth",
@@ -443,7 +443,7 @@ exports.capnamelist = {
 
   ],
 
-  "bug":[
+  "Bug":[
     "stickee",
     "insect",
     "-nid",
@@ -499,7 +499,7 @@ exports.capnamelist = {
     "weta"
   ],
 
-  "poison":[
+  "Poison":[
     "toxic",
     "gross",
     "sludge",
@@ -540,7 +540,7 @@ exports.capnamelist = {
     "+polluto"
   ],
 
-  "rock": [
+  "Rock": [
     "geode",
     "gravel",
     "rock",
@@ -574,7 +574,7 @@ exports.capnamelist = {
     "-ite"
   ],
 
-  "ground": [
+  "Ground": [
     "sand",
     "dirt",
     "gravel",

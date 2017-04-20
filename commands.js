@@ -1044,41 +1044,49 @@ exports.commands = {
 			move = Commands.randommove.call(this, "2,viable", self, dummyRoom);
 		}
 
-		//Code for generating a random name based on types generated
-		//Start by accessing the array from the capnamelist.js file in the data folder.
+		// Code for generating a random name based on types generated
+		// Start by accessing the array from the namelist.js file in the data folder.
 		var foundName = false;
 		var t1Name = '';
-		var type1array = Data.Capnames[type[0]];
-		var type2array = Data.Capnames[type[1]];
-		while(!foundName){
-            t1Name = Tools.sample(type1array)[0]
-            if(t1Name.charAt(0) === '-'){ //Case Suffix, can't be first part of name. remove and reroll
-                Tools.removeElm(type1array, t1Name);
-            }else if(t1Name.charAt(0) === '+'){ //Case Prefix, remove '+' char from string and use
-                t1Name = t1Name.substr(1);
-                foundName = true;
-            }else{
-                foundName = true;
-            }
+		var type1array = Tools.shuffle(Data.Namelist[type[0]]);
+
+		var type2array = [];
+		if (type[1] === undefined) { //Checking for single type case
+			type2array = Tools.shuffle(type1array);
+		} else {
+			type2array = Tools.shuffle(Data.Namelist[type[1]]);
 		}
-		foundName = false;
+
+		// Grab our first word for the name
+		Tools.shuffle(Data.Namelist[type[1]]);
+		for (var i = 0; i < type1array.length; i++) {
+			if(type1array[i].charAt(0) === '+') {
+				// Case Prefix, remove '+' char from string and use
+				t1Name = type1array[i].substr(1)
+			} else if(type1array[i] !== '-') {
+				// If our string isn't a suffix, it's still ok. No characters to remove.
+				t1Name = type1array[i]
+			}
+			// Continue looping until we find a non-suffix
+		}
+		//Second word. Same stuff as the first, for the most part.
 		var t2Name = '';
-		while(!foundName){ // Same stuff, but for second type
-            t2Name = Tools.sample(type2array)[0]
-            if(t2Name.charAt(0) === '+'){ //Case Prefix, can't be first part of name. remove and reroll
-                Tools.removeElm(type1array, t2Name);
-            }else if(t2Name.charAt(0) === '-'){ //Case Suffix, remove '-' char from string and use
-                t2Name = t2Name.substr(1);
-                foundName = true;
-            }else{
-                foundName = true;
-            }
-        }
-        var fullName = t1Name.charAt(0).toUpperCase() + t1Name.substr(1) + t2Name;
-        //That should be it for random name stuff - just have to add it to the output now:
+		for (var i = 0; i < type2array.length; i++) {
+			if(type2array[i].charAt(0) === '-') {
+				// Case Suffix, remove '-' char from string and use
+				t2Name = type2array[i].substr(1)
+			} else if(type2array[i] !== '+') {
+				// If our string isn't a prefix, it's still ok. No characters to remove.
+				t2Name = type2array[i]
+			}
+			// Continue looping until we find a non-prefix
+		}
+
+		var fullName = t1Name.charAt(0).toUpperCase() + t1Name.substr(1) + t2Name;
+		// That should be it for random name stuff - just have to add it to the output now:
 		var text = "";
 		if (!room.canHTML()) {
-			text = "``Random Fakemon:`` A **" + type.join("/") + "** Pokemon named "+ fullName + " with **";
+			text = "``" + fullName + ":`` A **" + type.join("/") + "** Pokemon with **";
 			text += ability[0] + "**. It's stats are ``" + stats.join(", ") + "`` (" + bst + " bst). ";
 			text += "It uses the move **" + move[0] + "**.";
 		} else {
@@ -1367,7 +1375,7 @@ exports.commands = {
 		if (!by.canUse('fox', room) && !room.pm) return false;
 
 		var whatTheFoxSays = [
-	 		"Yip!", "Yarp!", "Growlf!", "Myron?!", "/me wags tail",
+			"Yip!", "Yarp!", "Growlf!", "Myron?!", "/me wags tail",
 			"/me bites " + by.name + "", "Yip~ <3", "/me draws furiously",
 			":3", ";3", "^w^", "OwO", "=^.~=", ">:3", "^^;w;^^",
 			"/me pounces " + by.name + "", "/me licks " + by.name + "",

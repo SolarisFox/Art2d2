@@ -112,7 +112,7 @@ if (!fs.existsSync('./config.js')) {
 global.Data = {
 	Movedex: require('./data/movedex.js').movedex,
 	Abilitydex: require('./data/abilitydex.js').abilitydex,
-	CapNames: require('./data/capnamelist.js').capnamelist, //List of CAP prefixes/suffixes for random names
+	Namelist: require('./data/namelist.js').namelist, //List of prefixes/suffixes for random names based on type
 	PAD: {} // generated on first use
 };
 
