@@ -32,6 +32,14 @@ exports.commands = {
 		room.say("My git repository can be found here: https://github.com/SolarisFox/Art2d2");
 	},
 
+	uptime: function(arg, by, room) {
+		if (!by.hasRank('+', room) || room.pm) {
+			by.say("I have been running for " + Tools.getTimeAgo(this.uptime, true));
+		} else {
+			room.say("I have been running for " + Tools.getTimeAgo(this.uptime, true));
+		}
+	},
+
 	/**
 	 * Dev commands
 	 *
