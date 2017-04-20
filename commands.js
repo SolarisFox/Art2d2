@@ -198,7 +198,6 @@ exports.commands = {
 		if (!room.canHTML()) return false;
 		var link = arg.trim();
 		if (!/^https?:\/\//.test(link)) return room.say('Link must use HTTP or HTTPS.');
-		if (!/\.(?:png|gif|jpe?g|bmp|psd)$/i.test(link)) return room.say('Link must be a JPG, GIF, or PNG file.');
 		var tarRoom = room;
 
 		Tools.getImageData(link).then(img => {
@@ -249,7 +248,7 @@ exports.commands = {
 	},
 
 	clearimages: function(arg, by, room) {
-		if (!by.hasRank("@", getRoom("art"))) return false;
+		if (!by.hasRank("@", room)) return false;
 		this.pendingImages = {};
 		if (!by.isSelf()) room.say("All currently pending images can no longer be approved.");
 	},
