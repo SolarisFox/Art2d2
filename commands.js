@@ -1046,7 +1046,7 @@ exports.commands = {
 
 		// Code for generating a random name based on types generated
 		// Start by accessing the array from the namelist.js file in the data folder.
-		var t1Name = '';
+		var name = '';
 		var type1array = Tools.shuffle(Data.Namelist[type[0]]);
 
 		var type2array = [];
@@ -1060,42 +1060,38 @@ exports.commands = {
 		for (var i = 0; i < type1array.length; i++) {
 			if (type1array[i].charAt(0) === '+') {
 				// Case Prefix, remove '+' char from string and use
-				t1Name = type1array[i].substr(1)
+				name += type1array[i].substr(1);
 				break;
-			} else if (type1array[i] !== '-') {
+			} else if (type1array[i].charAt(0) !== '-') {
 				// If our string isn't a suffix, it's still ok. No characters to remove.
-				t1Name = type1array[i]
+				name += type1array[i];
 				break;
 			}
-			// Continue looping until we find a non-suffix
 		}
 		//Second word. Same stuff as the first, for the most part.
-		var t2Name = '';
 		for (var i = 0; i < type2array.length; i++) {
 			if (type2array[i].charAt(0) === '-') {
 				// Case Suffix, remove '-' char from string and use
-				t2Name = type2array[i].substr(1)
+				name += type2array[i].substr(1);
 				break;
-			} else if (type2array[i] !== '+') {
+			} else if (type2array[i].charAt(0) !== '+') {
 				// If our string isn't a prefix, it's still ok. No characters to remove.
-				t2Name = type2array[i]
+				name += type2array[i];
 				break;
 			}
-			// Continue looping until we find a non-prefix
 		}
+		name = name.capitalize();
 
-		var fullName = t1Name.charAt(0).toUpperCase() + t1Name.substr(1) + t2Name;
-		// That should be it for random name stuff - just have to add it to the output now:
 		var text = "";
 		if (!room.canHTML()) {
-			text = "``" + fullName + ":`` A **" + type.join("/") + "** Pokemon with **";
+			text = "``" + name + ":`` A **" + type.join("/") + "** Pokemon with **";
 			text += ability[0] + "**. It's stats are ``" + stats.join(", ") + "`` (" + bst + " bst). ";
 			text += "It uses the move **" + move[0] + "**.";
 		} else {
 			text = '!htmlbox <table style="color:#444444;font-size:8pt">';
 			text += '<tr style="height:30px">';
 			text += '<td rowspan="3" style="width:40;vertical-align:top"><img src="http://i.imgur.com/Fx5wxDl.png" height="30" width="40"></img></td>'; // sprite
-			text += '<td colspan="6">'+ fullName +'</td>'; // name
+			text += '<td colspan="6">'+ name +'</td>'; // name
 			text += '<td style="width:32px"><img src="//play.pokemonshowdown.com/sprites/types/' + type[0] + '.png" height="14" width="32"></img></td>'; //type 1
 			text += '<td style="width:32px">';
 			if (type.length === 2) text += '<img src="//play.pokemonshowdown.com/sprites/types/' + type[1] + '.png" height="14" width="32"></img>'; //type 2

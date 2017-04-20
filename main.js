@@ -110,9 +110,9 @@ if (!fs.existsSync('./config.js')) {
 }
 
 global.Data = {
-	Movedex: require('./data/movedex.js').movedex,
-	Abilitydex: require('./data/abilitydex.js').abilitydex,
-	Namelist: require('./data/namelist.js').namelist, //List of prefixes/suffixes for random names based on type
+	Movedex: require('./data/movedex.js').movedex, // Pokemon moves
+	Abilitydex: require('./data/abilitydex.js').abilitydex, // Pokemon abilities
+	Namelist: require('./data/namelist.js').namelist, // List of prefixes/suffixes for random names based on type
 	PAD: {} // generated on first use
 };
 
