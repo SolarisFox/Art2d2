@@ -1199,7 +1199,7 @@ exports.commands = {
 			text += '</td>';
 			text += '<td style="width:86px;text-align:center">' + ability[0] + '</td>'; //main ability
 			text += '<td style="width:86px;text-align:center"><em>' + ability[1] + '</em></td>'; //hidden ability
-			text += '</tr><tr style="height:15px;color:#888888;text-align:right">'
+			text += '</tr><tr style="height:15px;color:#888888;text-align:right">';
 			for (var i = 0; i < 6; i++) {
 				text += '<td style="width:24px">' + statNames[i] + '</td>'; //stat names
 			}
@@ -1211,7 +1211,7 @@ exports.commands = {
 			}
 			text += '<td>' + bst + '</td>'; //bst
 			text += '<td colspan="3" style="text-align:center">' + move.join(", ") + '</td>'; //moves
-			text += '</tr></table>'
+			text += '</tr></table>';
 		}
 		room.say(text);
 	},
