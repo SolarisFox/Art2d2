@@ -1122,6 +1122,100 @@ exports.commands = {
 		room.say(text);
 	},
 
+	fakemonlc: "lccap",
+	caplc: "lccap",
+	lcfakemon: "lccap",
+	lccap: function(arg, by, room) {
+		if (!by.canUse('randomcommands', room) && !room.pm) return false;
+
+		var self = getUser(config.nick);
+		var dummyRoom = new Room("dummy");
+		dummyRoom.say = function(text) {}; // will ignore say functions
+		var stats = Commands.randomstats.call(this, "250-410", self, dummyRoom);
+		var statNames = ['HP', 'Atk', 'Def', 'SpA', 'SpD', 'Spe'];
+		var bst = stats[0] + stats[1] + stats[2] + stats[3] + stats[4] + stats[5];
+		var type = Commands.randomtype.call(this, "", self, dummyRoom);
+		var ability = Commands.randomability.call(this, "2,viable", self, dummyRoom);
+		var move = [];
+		if (stats[1] + 30 > stats[3]) {
+			move = Commands.randommove.call(this, "2,viable,physical", self, dummyRoom);
+		} else if (stats[3] + 30 > stats[1]) {
+			move = Commands.randommove.call(this, "2,viable,special", self, dummyRoom);
+		} else {
+			move = Commands.randommove.call(this, "2,viable", self, dummyRoom);
+		}
+
+		// Code for generating a random name based on types generated
+		// Start by accessing the array from the namelist.js file in the data folder.
+		var name = '';
+		var type1array = Tools.shuffle(Data.Namelist[type[0]]);
+
+		var type2array = [];
+		if (type.length === 1) { //Checking for single type case
+			type2array = Tools.shuffle(type1array);
+		} else {
+			type2array = Tools.shuffle(Data.Namelist[type[1]]);
+		}
+
+		// Grab our first word for the name
+		for (var i = 0; i < type1array.length; i++) {
+			if (type1array[i].charAt(0) === '+') {
+				// Case Prefix, remove '+' char from string and use
+				name += type1array[i].substr(1);
+				break;
+			} else if (type1array[i].charAt(0) !== '-') {
+				// If our string isn't a suffix, it's still ok. No characters to remove.
+				name += type1array[i];
+				break;
+			}
+		}
+		//Second word. Same stuff as the first, for the most part.
+		for (var i = 0; i < type2array.length; i++) {
+			if (type2array[i].charAt(0) === '-') {
+				// Case Suffix, remove '-' char from string and use
+				name += type2array[i].substr(1);
+				break;
+			} else if (type2array[i].charAt(0) !== '+') {
+				// If our string isn't a prefix, it's still ok. No characters to remove.
+				name += type2array[i];
+				break;
+			}
+		}
+		name = name.capitalize();
+
+		var text = "";
+		if (!room.canHTML()) {
+			text = "``" + name + ":`` A **" + type.join("/") + "** Pokemon with **";
+			text += ability[0] + "**. It's stats are ``" + stats.join(", ") + "`` (" + bst + " bst). ";
+			text += "It uses the move **" + move[0] + "**.";
+		} else {
+			text = '!htmlbox <table style="color:#444444;font-size:8pt">';
+			text += '<tr style="height:30px">';
+			text += '<td rowspan="3" style="width:40;vertical-align:top"><img src="http://i.imgur.com/Fx5wxDl.png" height="30" width="40"></img></td>'; // sprite
+			text += '<td colspan="6">'+ name +'</td>'; // name
+			text += '<td style="width:32px"><img src="//play.pokemonshowdown.com/sprites/types/' + type[0] + '.png" height="14" width="32"></img></td>'; //type 1
+			text += '<td style="width:32px">';
+			if (type.length === 2) text += '<img src="//play.pokemonshowdown.com/sprites/types/' + type[1] + '.png" height="14" width="32"></img>'; //type 2
+			text += '</td>';
+			text += '<td style="width:86px;text-align:center">' + ability[0] + '</td>'; //main ability
+			text += '<td style="width:86px;text-align:center"><em>' + ability[1] + '</em></td>'; //hidden ability
+			text += '</tr><tr style="height:15px;color:#888888;text-align:right">'
+			for (var i = 0; i < 6; i++) {
+				text += '<td style="width:24px">' + statNames[i] + '</td>'; //stat names
+			}
+			text += '<td>BST</td>';
+			text += '<td colspan="3" style="text-align:center">Featured Moves</td>';
+			text += '</tr><tr style="height:15px;text-align:right">';
+			for (var i = 0; i < 6; i++) {
+				text += '<td style="width:24px">' + stats[i] + '</td>'; //stats
+			}
+			text += '<td>' + bst + '</td>'; //bst
+			text += '<td colspan="3" style="text-align:center">' + move.join(", ") + '</td>'; //moves
+			text += '</tr></table>'
+		}
+		room.say(text);
+	},
+
 	randsalad: 'randomsalad',
 	randomsalad: function(arg, by, room) {
 		if (!by.canUse('randomcommands', room) && !room.pm) return false;
