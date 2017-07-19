@@ -5,7 +5,7 @@ exports.namelist = {
 		"fuzz",
 		"-kitty",
 		"-kat",
-		"bun ",
+		"bun",
 		"poof",
 		"heallo",
 		"deallo",
