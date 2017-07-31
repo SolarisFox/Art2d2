@@ -1122,9 +1122,6 @@ exports.commands = {
 		room.say(text);
 	},
 
-	fakemonlc: "lccap",
-	caplc: "lccap",
-	lcfakemon: "lccap",
 	lccap: function(arg, by, room) {
 		if (!by.canUse('randomcommands', room) && !room.pm) return false;
 
