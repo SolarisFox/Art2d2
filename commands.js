@@ -10,7 +10,7 @@ var Promise = require('promise');
 
 var middleButton = '<a href="http://www.smogon.com/forums/threads/ps-art-room-contest-summer-vacation.3573290/"><img src="https://i.gyazo.com/2f8c3f7fa792629d037c8ba867d912ab.gif" width="105" height="30"></a>';
 const BAR = '|'; //makes this character accessible with the eval command
-const pokemonTypes = ["normal","fire","water","electric","grass","ice","fighting","poison","flying","ground","psychic","bug","rock","ghost","dragon","dark","steel","fairy"];
+const pokemonTypes = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "flying", "ground", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"];
 
 exports.commands = {
 	/**
