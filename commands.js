@@ -433,7 +433,7 @@ exports.commands = {
 	mail: 'message',
 	msg: 'message',
 	message: function(arg, by, room) {
-		if (!by.paw && !by.canUse('message', getRoom("art"))) return by.say('``\mail`` is only available to users ' + Data.settings.commands.message.art || config.defaultrank + ' and above and those with "roompaw".');
+		if (!by.paw && !by.canUse('message', getRoom("art"))) return by.say('``\mail`` is only available to users ' + (Data.settings.commands.message.art || config.defaultrank) + ' and above and those with "roompaw".');
 		var parts = arg.split(', ');
 		var target = toId(parts[0]);
 		if (Users[target]) target = getUser(target).id;
