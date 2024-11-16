@@ -9,6 +9,8 @@ About
 -----
 
 This bot is primarily for the [Art room][2] and provides tools for drawing prompts.
+However the framework to provide a general purpose chatbot are easily extracted.
+See config-example.js for settup instructions.
 
   [2]: http://www.pokemonshowdown.com/art
 
